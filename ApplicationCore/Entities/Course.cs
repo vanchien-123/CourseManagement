@@ -1,12 +1,11 @@
 ﻿namespace ApplicationCore.Entities
 {
-    public class Course
+    public class Course : BaseEnity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public decimal? Price { get; set; }
         public string StatusTuition { get; set; }
-        public DateTime? StartDay { get; set; }
+        public DateTime StartDay { get; set; }
         public ICollection<Classroom> Classrooms { get; set; }
         public ICollection<Subject> Subjects { get; set; }
         public ICollection<Student> Students { get; set; }

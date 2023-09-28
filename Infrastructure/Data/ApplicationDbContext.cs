@@ -9,7 +9,7 @@ namespace Infeastructure.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
-        {}
+        { }
 
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Student> Student { get; set; }
@@ -21,7 +21,7 @@ namespace Infeastructure.Data
         public DbSet<Point> Point { get; set; }
         public DbSet<Subject> Subject { get; set; }
         public DbSet<TypePoint> TypePoint { get; set; }
-        public DbSet<Schedule> TimeTable { get; set; }
+        public DbSet<Schedule> Schedule { get; set; }
         public DbSet<Tuition> Tuition { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -39,19 +39,15 @@ namespace Infeastructure.Data
             builder.ApplyConfiguration(new ScheduleConfiguration());
             builder.ApplyConfiguration(new TuitionConfiguration());
             builder.ApplyConfiguration(new CourseConfiguration());
-            
+
 
             base.OnModelCreating(builder);
 
             //Data seed table Qualification
-            builder.Entity<TypePoint>().HasData(new TypePoint { Id = "1", Name = " Kiểm tra miệng", Coefficient = 1 });
-            builder.Entity<TypePoint>().HasData(new TypePoint { Id = "2", Name = " Kiểm tra 15p", Coefficient = 1 });
-            builder.Entity<TypePoint>().HasData(new TypePoint { Id = "3", Name = " Kiểm tra 1 tiết", Coefficient = 2 });
-            builder.Entity<TypePoint>().HasData(new TypePoint { Id = "4", Name = " Kiểm tra cuối kì", Coefficient = 3 });
-            
-
-            
-
+            builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra miệng", Coefficient = 1, CreatedBy="Admin", UpdatedBy = "Admin" });
+            builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra 15p", Coefficient = 1, CreatedBy = "Admin", UpdatedBy = "Admin" });
+            builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra 1 tiết", Coefficient = 2, CreatedBy = "Admin", UpdatedBy = "Admin" });
+            builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra cuối kì", Coefficient = 3, CreatedBy = "Admin", UpdatedBy = "Admin" });
 
 
 

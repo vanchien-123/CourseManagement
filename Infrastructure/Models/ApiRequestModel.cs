@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Models
 {
-    internal class ApiRequestModel
+    public class ApiRequestModel
     {
     }
 }

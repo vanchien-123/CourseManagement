@@ -1,8 +1,7 @@
-﻿namespace ApplicationCore.Entities
+﻿ namespace ApplicationCore.Entities
 {
-    public class Holiday
+    public class Holiday : BaseEnity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Reason { get; set; }
         public DateTime StartDate { get; set;}
