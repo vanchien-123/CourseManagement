@@ -33,8 +33,9 @@ namespace Infrastructure.Services
         private readonly IConfiguration _configuration;
         private readonly JwtConfiguration _jwtConfiguration;
         private readonly ApplicationDbContext _context;
+        private readonly IFileService _fileService;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, JwtConfiguration jwtConfiguration, ApplicationDbContext context,RoleManager<IdentityRole> roleManager)
+        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, JwtConfiguration jwtConfiguration, ApplicationDbContext context,RoleManager<IdentityRole> roleManager, IFileService fileService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -42,6 +43,7 @@ namespace Infrastructure.Services
             _jwtConfiguration = jwtConfiguration;
             _context = context;
             _roleManager = roleManager;
+            _fileService = fileService;
         }
 
         public async Task<bool> Register(ApiRequestRegisterModel registerRequest, string role)
@@ -96,7 +98,7 @@ namespace Infrastructure.Services
                 );
             }
 
-            var data = await query.Where(x=>!x.IsDelete).Select(x => new ApiRequestRegisterModel()
+            var data = await query.Where(x=>!x.IsDelete && x.ParentID == null).Select(x => new ApiRequestRegisterModel()
             {
                 Email = x.Email,
                 Name = x.Name,
@@ -162,8 +164,6 @@ namespace Infrastructure.Services
             return stringToken;
         }
 
-      
-
         public async Task<ApiResponseModel<ApiRequestRegisterModel>> GetbyId(String id)
         {
             try
@@ -195,7 +195,6 @@ namespace Infrastructure.Services
                 throw new CourseException(ex.ToString());
             }
         }
-
 
         public async Task<bool> Update(ApiRequestRegisterModel model, String id)
         {

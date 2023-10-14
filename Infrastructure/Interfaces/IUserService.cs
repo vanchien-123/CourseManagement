@@ -17,6 +17,6 @@ namespace Infrastructure.Interfaces
         Task<bool> Update(ApiRequestRegisterModel model, String id);
         Task<bool> Delete(String Id);
         Task<ApiResponseModel<ApiRequestRegisterModel>> GetbyId(String Id);
-        //Task<bool> ForgotPassword(String email);
+        
     }
 }

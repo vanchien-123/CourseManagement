@@ -11,7 +11,8 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles ="Admin")]
+
     public class InstructorController : ControllerBase
     {
         private readonly IInstructorService _instructorService;
@@ -32,14 +33,14 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] InstructorModel model)
+        public async Task<IActionResult> Create([FromQuery] InstructorModel model, string role)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var newInstructor = await _instructorService.Create(model);
+            var newInstructor = await _instructorService.Create(model, role);
 
             if (!newInstructor)
             {

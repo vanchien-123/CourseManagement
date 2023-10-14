@@ -11,7 +11,7 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin, Instructor")]
     public class TypePointController : ControllerBase
     {
         private readonly ITypePointService _typePointService;

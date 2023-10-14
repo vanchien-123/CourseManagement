@@ -12,7 +12,7 @@ namespace Infrastructure.Interfaces
     public interface IInstructorService
     {
         Task<ApiResponseModel<IEnumerable<InstructorModel>>> GetList(InstructorModeRequest request);
-        Task<bool> Create(InstructorModel model);
+        Task<bool> Create(InstructorModel model, string role);
         Task<bool> Update(InstructorModel model, Guid id);
         Task<bool> Delete(Guid Id);
         Task<ApiResponseModel<InstructorModel>> GetbyId(Guid Id);

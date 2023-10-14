@@ -31,13 +31,14 @@ namespace WebApi.Controllers
 
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] StudentModel model)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromQuery] StudentModel model, string role)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var newStudent = await _studentService.Create(model);
+            var newStudent = await _studentService.Create(model, role);
             if (!newStudent)
             {
                 return BadRequest("Create is unsuccessful.");
@@ -58,6 +59,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAsync([FromForm] StudentModel model, Guid id)
         {
             var response = await _studentService.Update(model, id);
@@ -66,6 +68,7 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var response = await _studentService.Delete(id);

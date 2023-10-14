@@ -18,6 +18,7 @@ namespace WebApi.Controllers
             _holidayService = holidayService;
         }
 
+        [Authorize(Roles = "Admin, Instructor")]
         [HttpGet("list")]
         public async Task<IActionResult> GetAll([FromQuery] HolidayModelRequest request)
         {
@@ -26,6 +27,7 @@ namespace WebApi.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] HolidayModel holidayModel)
         {
@@ -41,6 +43,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAllById(Guid id)
         {
@@ -51,6 +54,7 @@ namespace WebApi.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync([FromBody] HolidayModel model, Guid id)
         {
@@ -59,6 +63,7 @@ namespace WebApi.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {

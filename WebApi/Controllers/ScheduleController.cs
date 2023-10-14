@@ -10,7 +10,7 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ScheduleController : ControllerBase
     {
         private readonly IScheduleService _scheduleService;
@@ -20,6 +20,7 @@ namespace WebApi.Controllers
             _scheduleService = scheduleService;
         }
 
+        [Authorize(Roles = "Admin, Instructor")]
         [HttpGet("list")]
         public async Task<IActionResult> GetAll([FromQuery] ScheduleModelRequest request)
         {

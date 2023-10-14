@@ -7,6 +7,7 @@ namespace ApplicationCore.Entities
         public string Name { get; set; }
         public string? Avatar { get; set; }
         public bool IsRoot { get; set; }
+        public Guid? ParentID { get; set; }
         public bool IsDelete { get; set; }
 
     }

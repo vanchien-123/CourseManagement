@@ -10,7 +10,7 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;

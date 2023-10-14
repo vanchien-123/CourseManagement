@@ -12,9 +12,10 @@ namespace Infrastructure.Interfaces
     public interface IStudentService
     {
         Task<ApiResponseModel<IEnumerable<StudentModel>>> GetList(StudentModelRequest request);
-        Task<bool> Create(StudentModel model);
+        Task<bool> Create(StudentModel model, string role);
         Task<bool> Update(StudentModel model, Guid id);
         Task<bool> Delete(Guid Id);
         Task<ApiResponseModel<StudentModel>> GetbyId(Guid Id);
+        //Task<StudentDisplayModel> GetClassByIdStudent(Guid Id);
     }
 }

@@ -1,12 +1,17 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Exceptions;
 using ApplicationCore.System.Instructor;
+using ApplicationCore.System.User;
 using Infeastructure.Data;
 using Infrastructure.Enum;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Infrastructure.Services
 {
@@ -14,13 +19,16 @@ namespace Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileService _fileService;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public InstructorService(ApplicationDbContext context, IFileService fileService)
+        public InstructorService(ApplicationDbContext context, IFileService fileService, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _fileService = fileService;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
-
         public async Task<ApiResponseModel<IEnumerable<InstructorModel>>> GetList(InstructorModeRequest request)
         {
             var query = _context.Instructor.AsQueryable();
@@ -59,8 +67,7 @@ namespace Infrastructure.Services
                 Errors = null
             };
         }
-
-        public async Task<bool> Create(InstructorModel model)
+        public async Task<bool> Create(InstructorModel model, string role)
         {
             try
             {
@@ -88,10 +95,37 @@ namespace Infrastructure.Services
 
                 }
 
-                _context.Instructor.Add(newInstructor);
-                await _context.SaveChangesAsync();
 
-                return true;
+                var user = new ApplicationUser()
+                {
+                    ParentID = newInstructor.Id,
+                    Email = model.Email,
+                    Name = model.FirstName + " " + model.LastName,
+                    UserName = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    PasswordHash = model.Password,
+                    Avatar = model.fileAvatar.FileName
+                };
+
+                if (await _roleManager.RoleExistsAsync(role))
+                {
+                    var result = await _userManager.CreateAsync(user, model.Password);
+
+                    if (!result.Succeeded)
+                    {
+                        throw new CourseException("User created failed");
+                    }
+
+                    await _userManager.AddToRoleAsync(user, role);
+                    _context.Instructor.Add(newInstructor);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+
+                //_context.Instructor.Add(newInstructor);
+                //await _context.SaveChangesAsync();
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -177,6 +211,24 @@ namespace Infrastructure.Services
                     _context.Instructor.Update(entity);
                 }
 
+                var entityUser = await _context.ApplicationUser.Where(x => x.ParentID == id).FirstOrDefaultAsync();
+
+                if (entityUser != null)
+                {
+                    entityUser.Email = model.Email;
+                    entityUser.NormalizedEmail = model.Email;
+                    entityUser.UserName = model.Email;
+                    entityUser.NormalizedUserName = model.Email;
+                    entityUser.Name = model.FirstName + " " + model.LastName;
+                    entityUser.PasswordHash = model.Password;
+                    entityUser.PhoneNumber = model.PhoneNumber;
+
+                    _context.ApplicationUser.Update(entityUser);
+                }
+
+                await _context.SaveChangesAsync();
+
+
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -209,5 +261,6 @@ namespace Infrastructure.Services
                 throw new CourseException(ex.ToString());
             }
         }
+
     }
 }

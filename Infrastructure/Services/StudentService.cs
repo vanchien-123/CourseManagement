@@ -6,6 +6,7 @@ using Infeastructure.Data;
 using Infrastructure.Enum;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,11 +22,15 @@ namespace Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileService _fileService;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public StudentService(ApplicationDbContext context, IFileService fileService)
+        public StudentService(ApplicationDbContext context, IFileService fileService, RoleManager<IdentityRole>  roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _fileService = fileService;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         public async Task<ApiResponseModel<IEnumerable<StudentModel>>> GetList(StudentModelRequest request)
@@ -70,7 +75,7 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<bool> Create(StudentModel model)
+        public async Task<bool> Create(StudentModel model, string role)
         {
             try
             {
@@ -94,13 +99,38 @@ namespace Infrastructure.Services
                 if (model.fileAvatar != null)
                 {
                     await _fileService.SaveImage(model.fileAvatar);
-
                 }
 
-                _context.Student.Add(newStudent);
-                await _context.SaveChangesAsync();
+                var user = new ApplicationUser()
+                {
+                    ParentID = newStudent.Id,
+                    Email = model.Email,
+                    Name = model.FirstName + " " + model.LastName,
+                    UserName = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    PasswordHash = model.Password,
+                    Avatar = model.fileAvatar.FileName
+                };
 
-                return true;
+                if (await _roleManager.RoleExistsAsync(role))
+                {
+                    var result = await _userManager.CreateAsync(user, model.Password);
+
+                    if (!result.Succeeded)
+                    {
+                        throw new CourseException("User created failed");
+                    }
+
+                    await _userManager.AddToRoleAsync(user, role);
+                    _context.Student.Add(newStudent);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+
+                //_context.Student.Add(newStudent);
+                //await _context.SaveChangesAsync();
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -158,7 +188,7 @@ namespace Infrastructure.Services
                     throw new CourseException("Update is unsuccess!");
                 }
 
-                var entity = await _context.Student.Where(x => x.Id == id).FirstOrDefaultAsync();
+                var entity = await _context.Student.Where(x => x.Id == id ).FirstOrDefaultAsync();
                 if (entity != null)
                 {
                     entity.UpdatedDate = DateTime.Now;
@@ -185,6 +215,21 @@ namespace Infrastructure.Services
                     _context.Student.Update(entity);
                 }
 
+                var entityUser = await _context.ApplicationUser.Where(x => x.ParentID == id).FirstOrDefaultAsync();
+
+                if (entityUser != null)
+                {
+                    entityUser.Email = model.Email;
+                    entityUser.NormalizedEmail = model.Email;
+                    entityUser.UserName = model.Email;
+                    entityUser.NormalizedUserName = model.Email;
+                    entityUser.Name = model.FirstName + " " + model.LastName;
+                    entityUser.PasswordHash = model.Password;
+                    entityUser.PhoneNumber = model.PhoneNumber;
+
+                    _context.ApplicationUser.Update(entityUser);
+                }
+
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -203,10 +248,17 @@ namespace Infrastructure.Services
                 .Where(x => x.Id == Id)
                 .FirstOrDefaultAsync();
 
-                if (item != null)
+                var itemUser = await _context.ApplicationUser
+                .Where(x => x.ParentID == Id)
+                .FirstOrDefaultAsync();
+
+                if (item != null && itemUser != null)
                 {
                     item.IsDelete = true;
                     _context.Student.Update(item);
+                    itemUser.IsDelete = true;
+                    _context.ApplicationUser.Update(itemUser);
+
                 }
 
                 await _context.SaveChangesAsync();
@@ -217,5 +269,14 @@ namespace Infrastructure.Services
                 throw new CourseException(ex.ToString());
             }
         }
+
+        //public async Task<StudentDisplayModel> GetClassByIdStudent(Guid Id)
+        //{
+        //    var student = await _context.Student
+        //         .Include(x => x.Classrooms).ThenInclude(x => x.Subjects).ThenInclude(x => x.
+
+
+        //    return student;
+        //}
     }
 }

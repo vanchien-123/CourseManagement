@@ -10,6 +10,6 @@
         public Guid? InstructorId { get; set; }
         public Instructor Instructor { get; set; }
         public ICollection<Point> Points { get; set; }
-        public ICollection<Schedule> TimeTables { get; set; }
+        public ICollection<Schedule> Schedules { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models.Email;
 using ApplicationCore.System.User;
-using Azure;
 using Infrastructure.Enum;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
@@ -36,7 +35,7 @@ namespace WebApi.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("list")]
         public async Task<IActionResult> GetAll([FromQuery] UserModelRequest request)
         {
@@ -128,7 +127,7 @@ namespace WebApi.Controllers
 
                 //var forgotPasswordLink =  Url.Action(nameof(ResetPassword), "Authencation", new { token, email = user.Email }, Request.Scheme);
 
-                var forgotPasswordLink = "Link = " + "https://localhost:7255/api/Users/reset-password" + " Email: "+ user.Email + " Token: " + token;
+                var forgotPasswordLink = "Link = " + "https://localhost:7255/api/Users/reset-password" + " Email: " + user.Email + " Token: " + token;
 
                 var message = new Message(new string[] { user.Email! }, "Forgot Password Link", forgotPasswordLink!);
                 await _emailService.SendEmail(message);
@@ -147,18 +146,6 @@ namespace WebApi.Controllers
             };
         }
 
-
-
-        //[HttpGet("reset-password")]
-        //public async Task<IActionResult> ResetPassword(string token, string email)
-        //{
-        //    var model = new ResetPassword { Token = token, Email = email };
-        //    return Ok(new
-        //    {
-        //        model
-        //    });
-        //}
-
         [HttpPost("reset-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
@@ -167,7 +154,11 @@ namespace WebApi.Controllers
 
             if (user != null)
             {
-                var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+                Byte[] tokenDecodeByte = WebEncoders.Base64UrlDecode(resetPassword.TokenEncoding);
+                string tokenString = Encoding.UTF8.GetString(tokenDecodeByte);
+
+                var resetPassResult = await _userManager.ResetPasswordAsync(user, tokenString, resetPassword.Password);
+
                 if (!resetPassResult.Succeeded)
                 {
                     foreach (var error in resetPassResult.Errors)
