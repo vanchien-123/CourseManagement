@@ -76,7 +76,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAllById(String id)
+        public async Task<IActionResult> GetAllById(string id)
         {
             var response = await _userService.GetbyId(id);
 
@@ -86,15 +86,15 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromBody] ApiRequestRegisterModel model, String id)
+        public async Task<IActionResult> UpdateAsync([FromQuery] ApiRequestRegisterModel model, string id, string role)
         {
-            var response = await _userService.Update(model, id);
+            var response = await _userService.Update(model, id, role);
 
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(String id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
             var response = await _userService.Delete(id);
 

@@ -35,7 +35,7 @@ namespace Infrastructure.Services
         private readonly ApplicationDbContext _context;
         private readonly IFileService _fileService;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, JwtConfiguration jwtConfiguration, ApplicationDbContext context,RoleManager<IdentityRole> roleManager, IFileService fileService)
+        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, JwtConfiguration jwtConfiguration, ApplicationDbContext context, RoleManager<IdentityRole> roleManager, IFileService fileService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -51,7 +51,7 @@ namespace Infrastructure.Services
             //check user exits
 
             var userExits = await _userManager.FindByEmailAsync(registerRequest.Email);
-            if(userExits != null)
+            if (userExits != null)
             {
                 throw new CourseException("User already exits!");
             }
@@ -66,7 +66,7 @@ namespace Infrastructure.Services
                 PasswordHash = registerRequest.Password
             };
 
-            if(await _roleManager.RoleExistsAsync(role))
+            if (await _roleManager.RoleExistsAsync(role))
             {
                 var result = await _userManager.CreateAsync(user, registerRequest.Password);
 
@@ -80,7 +80,7 @@ namespace Infrastructure.Services
             }
 
 
-            
+
             return false;
         }
 
@@ -98,7 +98,7 @@ namespace Infrastructure.Services
                 );
             }
 
-            var data = await query.Where(x=>!x.IsDelete && x.ParentID == null).Select(x => new ApiRequestRegisterModel()
+            var data = await query.Where(x => !x.IsDelete && x.ParentID == null).Select(x => new ApiRequestRegisterModel()
             {
                 Email = x.Email,
                 Name = x.Name,
@@ -164,7 +164,7 @@ namespace Infrastructure.Services
             return stringToken;
         }
 
-        public async Task<ApiResponseModel<ApiRequestRegisterModel>> GetbyId(String id)
+        public async Task<ApiResponseModel<ApiRequestRegisterModel>> GetbyId(string id)
         {
             try
             {
@@ -190,13 +190,15 @@ namespace Infrastructure.Services
                     Status = StatusResponse.SUCCESS,
                     Errors = null
                 };
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new CourseException(ex.ToString());
             }
         }
 
-        public async Task<bool> Update(ApiRequestRegisterModel model, String id)
+
+        public async Task<bool> Update(ApiRequestRegisterModel model, string id, string role)
         {
             try
             {
@@ -206,8 +208,11 @@ namespace Infrastructure.Services
                 }
 
                 var entity = await _context.ApplicationUser.Where(x => x.Id == id && !x.IsDelete).FirstOrDefaultAsync();
+
                 if (entity != null)
                 {
+                    //var passwordHash = await _userManager.AddPasswordAsync(entity, model.Password);
+
                     entity.Email = model.Email;
                     entity.NormalizedEmail = model.Email;
                     entity.UserName = model.Email;
@@ -216,13 +221,31 @@ namespace Infrastructure.Services
                     entity.PasswordHash = model.Password;
                     entity.PhoneNumber = model.PhoneNumber;
 
+
+                    var roleIds = await _context.UserRoles.Where(x => x.UserId == entity.Id).Select(x => x.RoleId).ToListAsync();
+
+                    if (roleIds != null && roleIds.Any())
+                    {
+                        var roleNames = await _context.Roles.Where(x => roleIds.Contains(x.Id)).Select(x => x.Name).ToListAsync();
+                        if (roleNames != null && roleNames.Any())
+                        {
+                            await _userManager.RemoveFromRolesAsync(entity, roleNames);
+                        }
+                    }
+
+                    var roleObj = await _context.Roles.Where(x => x.Name.Equals(role)).FirstOrDefaultAsync();
+                    if (roleObj != null)
+                    {
+                        await _userManager.AddToRoleAsync(entity, role);
+                    }
+
                     _context.ApplicationUser.Update(entity);
                 }
 
                 await _context.SaveChangesAsync();
-
                 return true;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new CourseException(ex.ToString());
             }
@@ -243,7 +266,8 @@ namespace Infrastructure.Services
 
                 await _context.SaveChangesAsync();
                 return true;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new CourseException(ex.ToString());
             }

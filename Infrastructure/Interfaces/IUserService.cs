@@ -14,9 +14,9 @@ namespace Infrastructure.Interfaces
         Task<string> Authencate(LoginRequest loginRequest);
         Task<bool> Register(ApiRequestRegisterModel registerRequest, string role);
         Task<ApiResponseModel<IEnumerable<ApiRequestRegisterModel>>> GetList(UserModelRequest request);
-        Task<bool> Update(ApiRequestRegisterModel model, String id);
-        Task<bool> Delete(String Id);
-        Task<ApiResponseModel<ApiRequestRegisterModel>> GetbyId(String Id);
+        Task<bool> Update(ApiRequestRegisterModel model, string id, string role);
+        Task<bool> Delete(string Id);
+        Task<ApiResponseModel<ApiRequestRegisterModel>> GetbyId(string Id);
         
     }
 }
