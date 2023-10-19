@@ -146,6 +146,8 @@ namespace WebApi.Controllers
             };
         }
 
+
+        //vidoe báo cáo bản vá của reset password
         [HttpPost("reset-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)

@@ -96,7 +96,6 @@ namespace Infrastructure.Services
             }
         }
 
-
         public async Task<bool> Update(CombinationModel model, Guid id)
         {
             try

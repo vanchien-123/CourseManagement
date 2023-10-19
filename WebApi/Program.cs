@@ -1,6 +1,7 @@
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Services;
+using ApplicationCore.Permission;
 using ApplicationCore.Models.Email;
 using ApplicationCore.System.User;
 using Infeastructure.Data;
@@ -13,8 +14,12 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -32,6 +37,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     ).AddDefaultUI()
      .AddEntityFrameworkStores<ApplicationDbContext>().
      AddDefaultTokenProviders();
+
 
 
 builder.Services.AddScoped<ApplicationDbContext>();

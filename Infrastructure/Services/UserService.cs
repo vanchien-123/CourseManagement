@@ -122,7 +122,7 @@ namespace Infrastructure.Services
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, loginRequest.Password, loginRequest.Remember, true);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
                 throw new CourseException("User or password incorrect, please try again !");
             }

@@ -101,7 +101,6 @@ namespace Infrastructure.Services
             return true;
         }
 
-
         public async Task<bool> Update(TypePointModel model, Guid id)
         {
             try
