@@ -3,7 +3,6 @@ using ApplicationCore.Models.Role;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-
 namespace Infrastructure.Data
 {
     public class DbSeeder

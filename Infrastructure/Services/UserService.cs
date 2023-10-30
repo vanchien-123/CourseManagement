@@ -120,9 +120,9 @@ namespace Infrastructure.Services
             {
                 throw new CourseException("User or password incorrect, please try again !");
             }
-
-            var result = await _signInManager.PasswordSignInAsync(user, loginRequest.Password, loginRequest.Remember, true);
-            if (!result.Succeeded)
+            var result = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+            
+            if (!result)
             {
                 throw new CourseException("User or password incorrect, please try again !");
             }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230920173850_F1")]
+    [Migration("20231023104620_F1")]
     partial class F1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsRoot")
                         .HasColumnType("bit");
 
@@ -66,6 +69,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("ParentID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -137,6 +143,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal?>("Tuition")
                         .HasColumnType("decimal(18,2)");
 
@@ -153,6 +162,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Classroom");
                 });
@@ -690,40 +701,40 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("61b5151e-4bf8-44a0-adc8-533a3d4076a8"),
+                            Id = new Guid("5a16ba0a-3e08-4ca5-9fd8-7eeddd62f147"),
                             Coefficient = 1,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1275),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3537),
                             IsDelete = false,
                             Name = " Kiểm tra miệng",
                             UpdatedBy = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("f01df6f0-ea00-4b24-9377-810cc0f0ff8f"),
+                            Id = new Guid("9e3d7627-d75f-4b1c-a758-bf24ccb55683"),
                             Coefficient = 1,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1311),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3572),
                             IsDelete = false,
                             Name = " Kiểm tra 15p",
                             UpdatedBy = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("c1c8c151-9c05-4559-892c-0b722000bd48"),
+                            Id = new Guid("4009e22c-8b7f-4e76-bf13-1c21dbe8f7e5"),
                             Coefficient = 2,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1321),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3594),
                             IsDelete = false,
                             Name = " Kiểm tra 1 tiết",
                             UpdatedBy = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("967afea9-cb63-455d-867a-6bb406ce03a2"),
+                            Id = new Guid("61232b65-c224-4018-9bab-b3a8c3a2faf1"),
                             Coefficient = 3,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1329),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3602),
                             IsDelete = false,
                             Name = " Kiểm tra cuối kì",
                             UpdatedBy = "Admin"
@@ -810,12 +821,10 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -852,12 +861,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -872,6 +879,10 @@ namespace Infrastructure.Migrations
                     b.HasOne("ApplicationCore.Entities.Course", "Course")
                         .WithMany("Classrooms")
                         .HasForeignKey("CourseId");
+
+                    b.HasOne("ApplicationCore.Entities.Student", null)
+                        .WithMany("Classrooms")
+                        .HasForeignKey("StudentId");
 
                     b.Navigation("Course");
                 });
@@ -929,7 +940,7 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("InstructorId");
 
                     b.HasOne("ApplicationCore.Entities.Subject", "Subject")
-                        .WithMany("TimeTables")
+                        .WithMany("Schedules")
                         .HasForeignKey("SubjectId");
 
                     b.Navigation("Instructor");
@@ -1096,6 +1107,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("ApplicationCore.Entities.Student", b =>
                 {
+                    b.Navigation("Classrooms");
+
                     b.Navigation("Tuitions");
                 });
 
@@ -1103,7 +1116,7 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Points");
 
-                    b.Navigation("TimeTables");
+                    b.Navigation("Schedules");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.TypePoint", b =>

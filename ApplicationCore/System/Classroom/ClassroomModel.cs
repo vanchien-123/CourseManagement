@@ -12,7 +12,6 @@ namespace ApplicationCore.System.Classroom
         public string Depscription { get; set; }
         public string SchoolYear { get; set; }
         public Guid? CourseId { get; set; }
-        public Guid? ScheduleId { get; set; }
         public int? AmountStudent { get; set; }
         public decimal? Tuition { get; set; }
         public string Avatar { get; set; }

@@ -699,40 +699,40 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("016fdfd1-c2d8-4b22-86d9-8941f917017c"),
+                            Id = new Guid("5a16ba0a-3e08-4ca5-9fd8-7eeddd62f147"),
                             Coefficient = 1,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 10, 11, 21, 29, 16, 538, DateTimeKind.Local).AddTicks(9884),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3537),
                             IsDelete = false,
                             Name = " Kiểm tra miệng",
                             UpdatedBy = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("af672274-1d55-4931-a373-558fa9832d64"),
+                            Id = new Guid("9e3d7627-d75f-4b1c-a758-bf24ccb55683"),
                             Coefficient = 1,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 10, 11, 21, 29, 16, 538, DateTimeKind.Local).AddTicks(9943),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3572),
                             IsDelete = false,
                             Name = " Kiểm tra 15p",
                             UpdatedBy = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("3680eaee-4e87-4c0b-a9de-bd2345ac3fc2"),
+                            Id = new Guid("4009e22c-8b7f-4e76-bf13-1c21dbe8f7e5"),
                             Coefficient = 2,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 10, 11, 21, 29, 16, 538, DateTimeKind.Local).AddTicks(9983),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3594),
                             IsDelete = false,
                             Name = " Kiểm tra 1 tiết",
                             UpdatedBy = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("0edafdfe-65bf-4b91-894b-4c900b829881"),
+                            Id = new Guid("61232b65-c224-4018-9bab-b3a8c3a2faf1"),
                             Coefficient = 3,
                             CreatedBy = "Admin",
-                            CreatedDate = new DateTime(2023, 10, 11, 21, 29, 16, 539, DateTimeKind.Local).AddTicks(3),
+                            CreatedDate = new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3602),
                             IsDelete = false,
                             Name = " Kiểm tra cuối kì",
                             UpdatedBy = "Admin"

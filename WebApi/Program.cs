@@ -18,8 +18,20 @@ using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
-builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("JCPolicy", builder => builder.WithOrigins()
+//    .AllowAnyHeader()
+//    .AllowAnyMethod()
+//    .AllowCredentials()
+//    .SetIsOriginAllowed((host) => true));
+//});
+
+//builder.Services.AddScoped<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+//builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -34,9 +46,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedAccount = true
-    ).AddDefaultUI()
-     .AddEntityFrameworkStores<ApplicationDbContext>().
-     AddDefaultTokenProviders();
+    ).AddEntityFrameworkStores<ApplicationDbContext>()
+     .AddDefaultTokenProviders();
 
 
 

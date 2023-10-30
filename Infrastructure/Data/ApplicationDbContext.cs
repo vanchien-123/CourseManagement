@@ -23,7 +23,6 @@ namespace Infeastructure.Data
         public DbSet<TypePoint> TypePoint { get; set; }
         public DbSet<Schedule> Schedule { get; set; }
         public DbSet<Tuition> Tuition { get; set; }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Configuration relation table
@@ -48,8 +47,6 @@ namespace Infeastructure.Data
             builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra 15p", Coefficient = 1, CreatedBy = "Admin", UpdatedBy = "Admin" });
             builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra 1 tiết", Coefficient = 2, CreatedBy = "Admin", UpdatedBy = "Admin" });
             builder.Entity<TypePoint>().HasData(new TypePoint { Name = " Kiểm tra cuối kì", Coefficient = 3, CreatedBy = "Admin", UpdatedBy = "Admin" });
-
-
 
         }
     }

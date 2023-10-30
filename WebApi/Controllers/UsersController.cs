@@ -59,7 +59,7 @@ namespace WebApi.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromQuery] ApiRequestRegisterModel requestRequest, string role)
+        public async Task<IActionResult> Register([FromBody] ApiRequestRegisterModel requestRequest, string role)
         {
             if (!ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromQuery] ApiRequestRegisterModel model, string id, string role)
+        public async Task<IActionResult> UpdateAsync([FromBody] ApiRequestRegisterModel model, string id, string role)
         {
             var response = await _userService.Update(model, id, role);
 
@@ -146,11 +146,9 @@ namespace WebApi.Controllers
             };
         }
 
-
-        //vidoe báo cáo bản vá của reset password
         [HttpPost("reset-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword resetPassword)
         {
             var user = await _userManager.FindByNameAsync(resetPassword.Email);
 

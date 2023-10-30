@@ -31,6 +31,8 @@ namespace Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsRoot = table.Column<bool>(type: "bit", nullable: false),
+                    ParentID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -199,8 +201,8 @@ namespace Infrastructure.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -244,8 +246,8 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -272,6 +274,7 @@ namespace Infrastructure.Migrations
                     Tuition = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TuitionFee = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -507,10 +510,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Coefficient", "CreatedBy", "CreatedDate", "IsDelete", "Name", "UpdatedBy", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("61b5151e-4bf8-44a0-adc8-533a3d4076a8"), 1, "Admin", new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1275), false, " Kiểm tra miệng", "Admin", null },
-                    { new Guid("967afea9-cb63-455d-867a-6bb406ce03a2"), 3, "Admin", new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1329), false, " Kiểm tra cuối kì", "Admin", null },
-                    { new Guid("c1c8c151-9c05-4559-892c-0b722000bd48"), 2, "Admin", new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1321), false, " Kiểm tra 1 tiết", "Admin", null },
-                    { new Guid("f01df6f0-ea00-4b24-9377-810cc0f0ff8f"), 1, "Admin", new DateTime(2023, 9, 21, 0, 38, 50, 489, DateTimeKind.Local).AddTicks(1311), false, " Kiểm tra 15p", "Admin", null }
+                    { new Guid("4009e22c-8b7f-4e76-bf13-1c21dbe8f7e5"), 2, "Admin", new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3594), false, " Kiểm tra 1 tiết", "Admin", null },
+                    { new Guid("5a16ba0a-3e08-4ca5-9fd8-7eeddd62f147"), 1, "Admin", new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3537), false, " Kiểm tra miệng", "Admin", null },
+                    { new Guid("61232b65-c224-4018-9bab-b3a8c3a2faf1"), 3, "Admin", new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3602), false, " Kiểm tra cuối kì", "Admin", null },
+                    { new Guid("9e3d7627-d75f-4b1c-a758-bf24ccb55683"), 1, "Admin", new DateTime(2023, 10, 23, 17, 46, 20, 457, DateTimeKind.Local).AddTicks(3572), false, " Kiểm tra 15p", "Admin", null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -556,6 +559,11 @@ namespace Infrastructure.Migrations
                 name: "IX_Classroom_CourseId",
                 table: "Classroom",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Classroom_StudentId",
+                table: "Classroom",
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClassroomScheduleRel_ClassroomId",
@@ -626,10 +634,21 @@ namespace Infrastructure.Migrations
                 name: "IX_Tuition_StudentId",
                 table: "Tuition",
                 column: "StudentId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Classroom_Student_StudentId",
+                table: "Classroom",
+                column: "StudentId",
+                principalTable: "Student",
+                principalColumn: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Classroom_Student_StudentId",
+                table: "Classroom");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -670,19 +689,19 @@ namespace Infrastructure.Migrations
                 name: "TypePoint");
 
             migrationBuilder.DropTable(
-                name: "Student");
-
-            migrationBuilder.DropTable(
                 name: "Subject");
-
-            migrationBuilder.DropTable(
-                name: "Classroom");
 
             migrationBuilder.DropTable(
                 name: "Combination");
 
             migrationBuilder.DropTable(
                 name: "Instructor");
+
+            migrationBuilder.DropTable(
+                name: "Student");
+
+            migrationBuilder.DropTable(
+                name: "Classroom");
 
             migrationBuilder.DropTable(
                 name: "Course");
